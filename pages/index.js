@@ -1,12 +1,23 @@
-import { Grid } from '@material-ui/core'
+import { Grid, Link, Typography } from '@material-ui/core'
 import Head from 'next/head'
 import Image from 'next/image'
 import Layout from '../components/Layout'
 import ProductItem from '../components/ProductItem'
 import styles from '../styles/Home.module.css'
 import data from '../utils/data'
+import Carousel from 'react-material-ui-carousel'
+import useStyles from '../utils/styles'
+import NextLink from 'next/link'
+import { useRouter } from 'next/router'
+import { useContext } from 'react'
+import { Store } from '../utils/Store'
+import axios from 'axios'
 
 export default function Home(props) {
+  const classes = useStyles()
+  const router = useRouter()
+  const { state, dispatch } = useContext(Store)
+  const { topRatedProducts, featuredProducts } = props
 
   const addToCartHandler = async (product) => {
     const existItem = state.cart.cartItems.find((x) => x._id === product._id);
@@ -21,6 +32,24 @@ export default function Home(props) {
   };
   return (
     <Layout >
+      {/* <Carousel className={classes.mt1} animation="slide">
+        {featuredProducts.map((product) => (
+          <NextLink
+            key={product._id}
+            href={`/product/${product.slug}`}
+            passHref
+          >
+            <Link>
+              <Image
+                src={product.featuredImage}
+                alt={product.name}
+                className={classes.featuredImage}
+              />
+            </Link>
+          </NextLink>
+        ))}
+      </Carousel> */}
+      <Typography variant="h2">Popular Products</Typography>
       <Grid container spacing={3}>
         {data.products.map((product) => (
           <Grid item md={4} key={product.name}>

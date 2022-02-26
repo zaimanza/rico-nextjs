@@ -1,4 +1,4 @@
-import { AppBar, Container, createMuiTheme, CssBaseline, Link, Switch, ThemeProvider, Toolbar, Typography } from '@material-ui/core'
+import { AppBar, Container, createTheme, CssBaseline, Link, Switch, ThemeProvider, Toolbar, Typography } from '@material-ui/core'
 import Head from 'next/head'
 import React, { useContext } from 'react'
 import useStyles from '../utils/styles'
@@ -11,7 +11,7 @@ export default function Layout({ title, description, children }) {
     const { state, dispatch } = useContext(Store)
     const { darkMode } = state
 
-    const theme = createMuiTheme({
+    const theme = createTheme({
         typography: {
             h1: {
                 fontSize: '1.6rem',
@@ -34,6 +34,7 @@ export default function Layout({ title, description, children }) {
             },
         },
     })
+
 
 
 
@@ -88,3 +89,4 @@ export default function Layout({ title, description, children }) {
         </div>
     )
 }
+
