@@ -46,7 +46,7 @@ export default function ProductScreen(props) {
             return;
         }
         dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity } });
-        router.push('/');
+        router.push('/cart');
     };
 
     return (
