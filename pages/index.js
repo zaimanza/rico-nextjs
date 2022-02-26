@@ -9,13 +9,36 @@ import {
   Button,
 } from '@material-ui/core';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import { useContext } from 'react';
 import Layout from '../components/Layout';
 import client from '../graphql/apollo-client';
+import { checkStockOneProduct } from '../graphql/schema/product/check-stock-one-product';
 import { getManyProduct } from '../graphql/schema/product/get-many-product';
+import { Store } from '../utils/Store';
 
 
 export default function Home(props) {
+  const router = useRouter();
+  const { state, dispatch } = useContext(Store);
   const { products } = props;
+  const addToCartHandler = async (product) => {
+    const existItem = state.cart.cartItems.find((x) => x._id === product._id);
+    const quantity = existItem ? existItem.quantity + 1 : 1;
+    const { data } = await client.query({
+      query: checkStockOneProduct,
+      variables: {
+        checkStockOneProductId: product._id,
+        quantity: quantity
+      }
+    });
+    if (!data.checkStockOneProduct) {
+      window.alert('Sorry. Product is out of stock');
+      return;
+    }
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity } });
+    router.push('/cart');
+  };
   return (
     <Layout>
       <div>
@@ -38,7 +61,11 @@ export default function Home(props) {
                 </NextLink>
                 <CardActions>
                   <Typography>${product.price}</Typography>
-                  <Button size="small" color="primary">
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => addToCartHandler(product)}
+                  >
                     Add to cart
                   </Button>
                 </CardActions>
