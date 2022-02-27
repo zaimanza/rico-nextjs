@@ -1,7 +1,10 @@
+import { ApolloProvider } from '@apollo/client';
 import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
+import client from '../graphql/apollo-client';
 import '../styles/globals.css';
 import { StoreProvider } from '../utils/Store';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -11,11 +14,15 @@ function MyApp({ Component, pageProps }) {
     }
   }, []);
   return (
-    <SnackbarProvider anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-      <StoreProvider>
-        <Component {...pageProps} />
-      </StoreProvider>
-    </SnackbarProvider>
+    <ApolloProvider client={client}>
+      <SnackbarProvider anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <StoreProvider>
+          <PayPalScriptProvider deferLoading={true}>
+            <Component {...pageProps} />
+          </PayPalScriptProvider>
+        </StoreProvider>
+      </SnackbarProvider>
+    </ApolloProvider>
   );
 }
 
