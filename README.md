@@ -2,9 +2,6 @@
 
 Build ECommerce Website Like Amazon by Next.js
 
-- Source Code    :  https://github.com/basir/next-amazona
-- Demo Website :  https://nextjs-amazona-final.vercel.app
-
 ## What you will learn
 
 - NextJS basics like setting up project, navigating between pages and data fetching
@@ -15,22 +12,6 @@ Build ECommerce Website Like Amazon by Next.js
 - MongoDB and Mongoose to save and retrieve data like products, orders and users
 - PayPal developer api to make online payment
 - Deploy web applications on servers like Vercel and Netlify
-
-## Full Course
-
-Learn building this ecommerce website on Udemy with 90% discount:
-https://www.udemy.com/course/nextjs-ecommerce
-
-## Run it Locally
-
-```
-$ git clone https://github.com/basir/next-amazona
-$ cd next-amazona
-$ npm install
-$ npm run dev
-$ Open http://localhost:3000/api/seed
-$ Open http://localhost:3000
-```
 
 ## Lessons
 
@@ -144,3 +125,13 @@ $ Open http://localhost:3000
     1. create form
     2. add radio button
     3. save method in context
+27. Create Place Order Page
+    1. display order info
+    2. show order summary
+    3. add place order button
+28. Implement Place Order Action
+    1. create click handler
+    2. send ajax request
+    3. clear cart
+    4. redirect to order screen
+    5. create backend api
