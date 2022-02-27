@@ -45,14 +45,16 @@ export default function Login() {
                     password: password,
                 }
             });
-            dispatch({ type: 'USER_LOGIN', payload: data.userLogin });
-            Cookies.set('userInfo', data.userLogin);
-            localStorage.setItem("token", data.userLogin.token);
+            if (data.userLogin.token) {
+                dispatch({ type: 'USER_LOGIN', payload: data.userLogin });
+                Cookies.set('userInfo', data.userLogin);
+                localStorage.setItem("token", data.userLogin.token);
+            }
             router.push(redirect || '/');
         } catch (err) {
             console.log(err);
             enqueueSnackbar(
-                err.response.data ? err.response.data.message : err.message,
+                "There's an error",
                 { variant: 'error' }
             );
         }

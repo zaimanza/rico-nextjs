@@ -57,7 +57,7 @@ export default function Register() {
             router.push(redirect || '/');
         } catch (err) {
             enqueueSnackbar(
-                err.response.data ? err.response.data.message : err.message,
+                "There's an error",
                 { variant: 'error' }
             );
         }

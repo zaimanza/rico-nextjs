@@ -146,3 +146,6 @@ Build ECommerce Website Like Amazon by Next.js
 31. Display Orders History
     1. create orders api
     2. show orders in profile screenW
+32. Update User Profile
+    1. create profile screen
+    2. create update profile api
