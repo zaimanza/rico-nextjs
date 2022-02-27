@@ -21,7 +21,6 @@ import {
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import useStyles from '../../utils/styles';
-import CheckoutWizard from '../../components/CheckoutWizard';
 import { useSnackbar } from 'notistack';
 import { getOneOrder } from '../../graphql/schema/order/get-one-order';
 import { getClientId } from '../../graphql/schema/paypal/get-client-id';
@@ -167,7 +166,6 @@ function Order({ params }) {
     }
     return (
         <Layout title={`Order ${orderId}`}>
-            <CheckoutWizard activeStep={3}></CheckoutWizard>
             <Typography component="h1" variant="h1">
                 Order {orderId}
             </Typography>
