@@ -15,7 +15,6 @@ import {
     TableCell,
     Link,
     CircularProgress,
-    Button,
     Card,
     List,
     ListItem,
@@ -24,8 +23,9 @@ import { useRouter } from 'next/router';
 import useStyles from '../../utils/styles';
 import CheckoutWizard from '../../components/CheckoutWizard';
 import { useSnackbar } from 'notistack';
-import Cookies from 'js-cookie';
 import { getOneOrder } from '../../graphql/schema/order/get-one-order';
+import { getClientId } from '../../graphql/schema/paypal/get-client-id';
+import { payOrder } from '../../graphql/schema/order/pay-order';
 import client from '../../graphql/apollo-client';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 
@@ -107,14 +107,14 @@ function Order({ params }) {
             }
         } else {
             const loadPaypalScript = async () => {
-                const { data: clientId } = await axios.get('/api/keys/paypal', {
-                    headers: { authorization: `Bearer ${userInfo.token}` },
+                const { data } = await client.query({
+                    query: getClientId,
                 });
                 paypalDispatch({
                     type: 'resetOptions',
                     value: {
-                        'client-id': clientId,
-                        currency: 'USD',
+                        'client-id': data.getClientId,
+                        currency: 'MYR',
                     },
                 });
                 paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
@@ -122,7 +122,7 @@ function Order({ params }) {
             loadPaypalScript();
         }
     }, [order, orderId, paypalDispatch, router, successPay, userInfo]);
-    const { closeSnackbar, enqueueSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
 
 
     function createOrder(data, actions) {
@@ -142,14 +142,18 @@ function Order({ params }) {
         return actions.order.capture().then(async function (details) {
             try {
                 dispatch({ type: 'PAY_REQUEST' });
-                const { data } = await axios.put(
-                    `/api/orders/${order._id}/pay`,
-                    details,
-                    {
-                        headers: { authorization: `Bearer ${userInfo.token}` },
+                console.log(details)
+                const { data } = await client.query({
+                    query: payOrder,
+                    variables: {
+                        orderId: order._id,
+                        status: details.status,
+                        emailAddress: details.payer.email_address,
+                        payOrderId: details.id
                     }
-                );
-                dispatch({ type: 'PAY_SUCCESS', payload: data });
+                });
+                // details
+                dispatch({ type: 'PAY_SUCCESS', payload: data.payOrder });
                 enqueueSnackbar('Order is paid', { variant: 'success' });
             } catch (err) {
                 dispatch({ type: 'PAY_FAIL', payload: "There is an error" });
