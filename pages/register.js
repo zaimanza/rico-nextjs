@@ -53,6 +53,7 @@ export default function Register() {
             });
             dispatch({ type: 'USER_LOGIN', payload: data.userRegister });
             Cookies.set('userInfo', data.userRegister);
+            localStorage.setItem("token", data.userRegister.token);
             router.push(redirect || '/');
         } catch (err) {
             enqueueSnackbar(
