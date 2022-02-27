@@ -46,7 +46,8 @@ export default function Login() {
                 }
             });
             dispatch({ type: 'USER_LOGIN', payload: data.userLogin });
-            Cookies.set('userInfo', data.userRegister);
+            Cookies.set('userInfo', data.userLogin);
+            localStorage.setItem("token", data.userLogin.token);
             router.push(redirect || '/');
         } catch (err) {
             console.log(err);

@@ -66,6 +66,8 @@ export default function Layout({ title, description, children }) {
         dispatch({ type: 'USER_LOGOUT' });
         Cookies.remove('userInfo');
         Cookies.remove('cartItems');
+        localStorage.removeItem("token");
+
         router.push('/');
     };
     return (

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Layout from '../components/Layout';
 import { Store } from '../utils/Store';
@@ -14,16 +14,19 @@ import {
     TableRow,
     TableCell,
     Link,
-    Select,
-    MenuItem,
     Button,
     Card,
     List,
     ListItem,
+    CircularProgress,
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import useStyles from '../utils/styles';
 import CheckoutWizard from '../components/checkoutWizard';
+import { useSnackbar } from 'notistack';
+import Cookies from 'js-cookie';
+import { addOrder } from '../graphql/schema/order/add-order';
+import client from '../graphql/apollo-client';
 
 function PlaceOrder() {
     const classes = useStyles();
@@ -45,7 +48,51 @@ function PlaceOrder() {
         if (!paymentMethod) {
             router.push('/payment');
         }
-    }, []);
+        if (cartItems.length === 0) {
+            router.push('/cart');
+        }
+    }, [cartItems.length, paymentMethod, router]);
+
+    const { closeSnackbar, enqueueSnackbar } = useSnackbar();
+    const [loading, setLoading] = useState(false);
+    const placeOrderHandler = async () => {
+        closeSnackbar();
+        try {
+            setLoading(true);
+            const orderItems = cartItems;
+
+            orderItems.forEach(orderItem => {
+                delete orderItem['__typename'];
+                delete orderItem['_id'];
+                delete orderItem['slug'];
+                delete orderItem['category'];
+                delete orderItem['brand'];
+                delete orderItem['rating'];
+                delete orderItem['countInStock'];
+                delete orderItem['numReviews'];
+                delete orderItem['description'];
+            });
+            const { data } = await client.mutate({
+                mutation: addOrder,
+                variables: {
+                    orderItems: orderItems,
+                    shippingAddress,
+                    paymentMethod,
+                    itemsPrice,
+                    shippingPrice,
+                    taxPrice,
+                    totalPrice,
+                }
+            });
+            dispatch({ type: 'CART_CLEAR' });
+            Cookies.remove('cartItems');
+            setLoading(false);
+            router.push(`/order/${data.addOrder._id}`);
+        } catch (err) {
+            setLoading(false);
+            enqueueSnackbar("There is an error", { variant: 'error' });
+        }
+    };
 
     return (
         <Layout title="Shopping Cart">
@@ -187,10 +234,20 @@ function PlaceOrder() {
                                 </Grid>
                             </ListItem>
                             <ListItem>
-                                <Button variant="contained" color="primary" fullWidth>
+                                <Button
+                                    onClick={placeOrderHandler}
+                                    variant="contained"
+                                    color="primary"
+                                    fullWidth
+                                >
                                     Place Order
                                 </Button>
                             </ListItem>
+                            {loading && (
+                                <ListItem>
+                                    <CircularProgress />
+                                </ListItem>
+                            )}
                         </List>
                     </Card>
                 </Grid>
