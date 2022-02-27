@@ -6,7 +6,6 @@ import {
     Button,
     Link,
 } from '@material-ui/core';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import React, { useContext, useEffect } from 'react';
@@ -16,6 +15,8 @@ import useStyles from '../utils/styles';
 import Cookies from 'js-cookie';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
+import { userRegister } from '../graphql/schema/user/user-register';
+import client from '../graphql/apollo-client';
 
 export default function Register() {
     const {
@@ -42,13 +43,16 @@ export default function Register() {
             return;
         }
         try {
-            const { data } = await axios.post('/api/users/register', {
-                name,
-                email,
-                password,
+            const { data } = await client.mutate({
+                mutation: userRegister,
+                variables: {
+                    name: name,
+                    email: email,
+                    password: password,
+                }
             });
-            dispatch({ type: 'USER_LOGIN', payload: data });
-            Cookies.set('userInfo', data);
+            dispatch({ type: 'USER_LOGIN', payload: data.userRegister });
+            Cookies.set('userInfo', data.userRegister);
             router.push(redirect || '/');
         } catch (err) {
             enqueueSnackbar(

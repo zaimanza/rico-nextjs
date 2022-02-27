@@ -46,9 +46,10 @@ export default function Login() {
                 }
             });
             dispatch({ type: 'USER_LOGIN', payload: data.userLogin });
-            Cookies.set('userInfo', data);
+            Cookies.set('userInfo', data.userRegister);
             router.push(redirect || '/');
         } catch (err) {
+            console.log(err);
             enqueueSnackbar(
                 err.response.data ? err.response.data.message : err.message,
                 { variant: 'error' }

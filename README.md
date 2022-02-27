@@ -129,3 +129,6 @@ $ Open http://localhost:3000
     1. create form
     2. implement backend api
     3. redirect user to redirect page
+24. Login and Register Form Validation
+    1. install react-hook-form
+    2. change input to controller
