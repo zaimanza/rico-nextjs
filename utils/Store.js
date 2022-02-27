@@ -50,7 +50,12 @@ function reducer(state, action) {
         case 'SAVE_SHIPPING_ADDRESS':
             return {
                 ...state,
-                cart: { ...state.cart, shippingAddress: action.payload },
+                shippingAddress: action.payload,
+            };
+        case 'SAVE_PAYMENT_METHOD':
+            return {
+                ...state,
+                paymentMethod: action.payload,
             };
         default:
             return state;

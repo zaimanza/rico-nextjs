@@ -139,3 +139,8 @@ $ Open http://localhost:3000
     1. create form
     2. add address fields
     3. save in Context and Cookies
+    4. save address in context
+26. Create Payment Page
+    1. create form
+    2. add radio button
+    3. save method in context
