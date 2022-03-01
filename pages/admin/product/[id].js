@@ -20,6 +20,7 @@ import useStyles from '../../../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { getProductById } from '../../../graphql/schema/admin/admin-product/get-product-by-id';
+import { updateProductById } from '../../../graphql/schema/admin/admin-product/update-product-by-id';
 import client from '../../../graphql/apollo-client';
 
 function reducer(state, action) {
@@ -101,20 +102,22 @@ function ProductEdit({ params }) {
         closeSnackbar();
         try {
             dispatch({ type: 'UPDATE_REQUEST' });
-            const { data } = await axios.put(
-                `/api/admin/products/${productId}`,
-                {
-                    name,
-                    slug,
-                    price,
-                    category,
-                    image,
-                    brand,
-                    countInStock,
-                    description,
-                },
-                { headers: { authorization: `Bearer ${userInfo.token}` } }
-            );
+            await client.query({
+                query: updateProductById,
+                variables: {
+                    updateProductByIdId: productId,
+                    updateData: {
+                        name: name,
+                        slug: slug,
+                        price: price,
+                        category: category,
+                        image: image,
+                        brand: brand,
+                        countInStock: countInStock,
+                        description: description,
+                    },
+                }
+            });
             dispatch({ type: 'UPDATE_SUCCESS' });
             enqueueSnackbar('Product updated successfully', { variant: 'success' });
             router.push('/admin/products');
