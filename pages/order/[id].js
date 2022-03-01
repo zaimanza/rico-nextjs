@@ -18,6 +18,7 @@ import {
     Card,
     List,
     ListItem,
+    Button,
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import useStyles from '../../utils/styles';
@@ -27,7 +28,7 @@ import { getClientId } from '../../graphql/schema/paypal/get-client-id';
 import { payOrder } from '../../graphql/schema/order/pay-order';
 import client from '../../graphql/apollo-client';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
-
+import { updateOrderDeliver } from '../../graphql/schema/order/update-order-deliver';
 function reducer(state, action) {
     switch (action.type) {
         case 'FETCH_REQUEST':
@@ -44,6 +45,19 @@ function reducer(state, action) {
             return { ...state, loadingPay: false, errorPay: action.payload };
         case 'PAY_RESET':
             return { ...state, loadingPay: false, successPay: false, errorPay: '' };
+        case 'DELIVER_REQUEST':
+            return { ...state, loadingDeliver: true };
+        case 'DELIVER_SUCCESS':
+            return { ...state, loadingDeliver: false, successDeliver: true };
+        case 'DELIVER_FAIL':
+            return { ...state, loadingDeliver: false, errorDeliver: action.payload };
+        case 'DELIVER_RESET':
+            return {
+                ...state,
+                loadingDeliver: false,
+                successDeliver: false,
+                errorDeliver: '',
+            };
         default:
             state;
     }
@@ -58,14 +72,14 @@ function Order({ params }) {
     const { userInfo } = state;
 
 
-    const [{ loading, error, order, successPay }, dispatch] = useReducer(
-        reducer,
-        {
-            loading: true,
-            order: {},
-            error: '',
-        }
-    );
+    const [
+        { loading, error, order, successPay, loadingDeliver, successDeliver },
+        dispatch,
+    ] = useReducer(reducer, {
+        loading: true,
+        order: {},
+        error: '',
+    });
     const {
         shippingAddress,
         paymentMethod,
@@ -99,10 +113,18 @@ function Order({ params }) {
                 dispatch({ type: 'FETCH_FAIL', payload: "Error fetching file" });
             }
         };
-        if (!order._id || successPay || (order._id && order._id !== orderId)) {
+        if (
+            !order._id ||
+            successPay ||
+            successDeliver ||
+            (order._id && order._id !== orderId)
+        ) {
             fetchOrder();
             if (successPay) {
                 dispatch({ type: 'PAY_RESET' });
+            }
+            if (successDeliver) {
+                dispatch({ type: 'DELIVER_RESET' });
             }
         } else {
             const loadPaypalScript = async () => {
@@ -120,7 +142,7 @@ function Order({ params }) {
             };
             loadPaypalScript();
         }
-    }, [order, orderId, paypalDispatch, router, successPay, userInfo]);
+    }, [order, orderId, paypalDispatch, router, successDeliver, successPay, userInfo]);
     const { enqueueSnackbar } = useSnackbar();
 
 
@@ -163,6 +185,23 @@ function Order({ params }) {
 
     function onError() {
         enqueueSnackbar("There is an error", { variant: 'error' });
+    }
+    async function deliverOrderHandler() {
+        try {
+            dispatch({ type: 'DELIVER_REQUEST' });
+
+            const { data } = await client.query({
+                query: updateOrderDeliver,
+                variables: {
+                    updateOrderDeliverId: order._id,
+                }
+            });
+            dispatch({ type: 'DELIVER_SUCCESS', payload: data.updateOrderDeliver });
+            enqueueSnackbar('Order is delivered', { variant: 'success' });
+        } catch (err) {
+            dispatch({ type: 'DELIVER_FAIL', payload: "There's an error" });
+            enqueueSnackbar("There's an error", { variant: 'error' });
+        }
     }
     return (
         <Layout title={`Order ${orderId}`}>
@@ -328,6 +367,19 @@ function Order({ params }) {
                                                 ></PayPalButtons>
                                             </div>
                                         )}
+                                    </ListItem>
+                                )}
+                                {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                                    <ListItem>
+                                        {loadingDeliver && <CircularProgress />}
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={deliverOrderHandler}
+                                        >
+                                            Deliver Order
+                                        </Button>
                                     </ListItem>
                                 )}
                             </List>
