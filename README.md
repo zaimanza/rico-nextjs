@@ -149,7 +149,12 @@ Build ECommerce Website Like Amazon by Next.js
 32. Update User Profile
     1. create profile screen
     2. create update profile api
- 33. Create Admin Dashboard
+33. Create Admin Dashboard
     1. Create Admin Menu
-    2. Add Admin Auth Middleware  
+    2. Add Admin Auth Middleware
     3. Implement admin summary api
+34. List Orders For Admin
+    1. fix isAdmin middleware
+    2. create orders page
+    3. create orders api
+    4. use api in page

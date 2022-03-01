@@ -1,3 +1,4 @@
+
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
@@ -7,22 +8,22 @@ import {
     Grid,
     List,
     ListItem,
-    TableContainer,
     Typography,
     Card,
+    Button,
+    ListItemText,
+    TableContainer,
     Table,
     TableHead,
     TableRow,
     TableCell,
     TableBody,
-    Button,
-    ListItemText,
 } from '@material-ui/core';
-import { Store } from '../utils/Store';
-import Layout from '../components/Layout';
-import useStyles from '../utils/styles';
-import { getUserManyOrder } from '../graphql/schema/order/get-user-many-order';
-import client from '../graphql/apollo-client';
+import { Store } from '../../utils/Store';
+import Layout from '../../components/Layout';
+import useStyles from '../../utils/styles';
+import { getManyOrder } from '../../graphql/schema/admin/get-many-order';
+import client from '../../graphql/apollo-client';
 
 function reducer(state, action) {
     switch (action.type) {
@@ -37,7 +38,7 @@ function reducer(state, action) {
     }
 }
 
-function OrderHistory() {
+function AdminDashboard() {
     const { state } = useContext(Store);
     const router = useRouter();
     const classes = useStyles();
@@ -53,34 +54,33 @@ function OrderHistory() {
         if (!userInfo) {
             router.push('/login');
         }
-        const fetchOrders = async () => {
+        const fetchData = async () => {
             try {
                 dispatch({ type: 'FETCH_REQUEST' });
-
                 const { data } = await client.query({
-                    query: getUserManyOrder,
+                    query: getManyOrder,
                 });
-                dispatch({ type: 'FETCH_SUCCESS', payload: data.getUserManyOrder });
+                dispatch({ type: 'FETCH_SUCCESS', payload: data.getManyOrder });
             } catch (err) {
-                dispatch({ type: 'FETCH_FAIL', payload: "There's an error" });
+                dispatch({ type: 'FETCH_FAIL', payload: "there's an error" });
             }
         };
-        fetchOrders();
-    }, [router, userInfo]);
+        fetchData();
+    }, []);
     return (
-        <Layout title="Order History">
+        <Layout title="Orders">
             <Grid container spacing={1}>
                 <Grid item md={3} xs={12}>
                     <Card className={classes.section}>
                         <List>
-                            <NextLink href="/profile" passHref>
+                            <NextLink href="/admin/dashboard" passHref>
                                 <ListItem button component="a">
-                                    <ListItemText primary="User Profile"></ListItemText>
+                                    <ListItemText primary="Admin Dashboard"></ListItemText>
                                 </ListItem>
                             </NextLink>
-                            <NextLink href="/order-history" passHref>
+                            <NextLink href="/admin/orders" passHref>
                                 <ListItem selected button component="a">
-                                    <ListItemText primary="Order History"></ListItemText>
+                                    <ListItemText primary="Orders"></ListItemText>
                                 </ListItem>
                             </NextLink>
                         </List>
@@ -91,9 +91,10 @@ function OrderHistory() {
                         <List>
                             <ListItem>
                                 <Typography component="h1" variant="h1">
-                                    Order History
+                                    Orders
                                 </Typography>
                             </ListItem>
+
                             <ListItem>
                                 {loading ? (
                                     <CircularProgress />
@@ -105,6 +106,7 @@ function OrderHistory() {
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>ID</TableCell>
+                                                    <TableCell>USER</TableCell>
                                                     <TableCell>DATE</TableCell>
                                                     <TableCell>TOTAL</TableCell>
                                                     <TableCell>PAID</TableCell>
@@ -116,6 +118,9 @@ function OrderHistory() {
                                                 {orders.map((order) => (
                                                     <TableRow key={order._id}>
                                                         <TableCell>{order._id.substring(20, 24)}</TableCell>
+                                                        <TableCell>
+                                                            {order.user ? order.user.name : 'DELETED USER'}
+                                                        </TableCell>
                                                         <TableCell>{order.createdAt}</TableCell>
                                                         <TableCell>${order.totalPrice}</TableCell>
                                                         <TableCell>
@@ -148,4 +153,4 @@ function OrderHistory() {
     );
 }
 
-export default dynamic(() => Promise.resolve(OrderHistory), { ssr: false });
+export default dynamic(() => Promise.resolve(AdminDashboard), { ssr: false });
