@@ -158,3 +158,11 @@ Build ECommerce Website Like Amazon by Next.js
     2. create orders page
     3. create orders api
     4. use api in page
+35. Deliver Order For Admin
+    1. create deliver api
+    2. add deliver button
+    3. implement click handler
+36. List Products For Admin
+    1. create products page
+    2. create products api
+    3. use api in page
