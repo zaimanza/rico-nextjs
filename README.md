@@ -166,3 +166,10 @@ Build ECommerce Website Like Amazon by Next.js
     1. create products page
     2. create products api
     3. use api in page
+37. Create Product Edit Page
+    1. create edit page
+    2. create api for product
+    3. show product data in form
+38. Update Product
+    1. create form submit handler
+    2. create backend api for update
