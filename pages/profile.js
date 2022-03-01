@@ -17,7 +17,6 @@ import Layout from '../components/Layout';
 import useStyles from '../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
-import Cookies from 'js-cookie';
 import { userUpdate } from '../graphql/schema/user/user-update';
 import client from '../graphql/apollo-client';
 
@@ -57,7 +56,7 @@ function Profile() {
                 }
             });
             dispatch({ type: 'USER_LOGIN', payload: data.userUpdate });
-            Cookies.set('userInfo', data.userUpdate);
+            localStorage.setItem('userInfo', data.userUpdate);
 
             enqueueSnackbar('Profile updated successfully', { variant: 'success' });
         } catch (err) {

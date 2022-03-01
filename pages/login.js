@@ -6,7 +6,6 @@ import {
     Button,
     Link,
 } from '@material-ui/core';
-import Cookies from 'js-cookie';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect } from 'react';
@@ -47,7 +46,7 @@ export default function Login() {
             });
             if (data.userLogin.token) {
                 dispatch({ type: 'USER_LOGIN', payload: data.userLogin });
-                Cookies.set('userInfo', data.userLogin);
+                localStorage.setItem('userInfo', data.userLogin);
                 localStorage.setItem("token", data.userLogin.token);
             }
             router.push(redirect || '/');

@@ -24,7 +24,6 @@ import { useRouter } from 'next/router';
 import useStyles from '../utils/styles';
 import CheckoutWizard from '../components/checkoutWizard';
 import { useSnackbar } from 'notistack';
-import Cookies from 'js-cookie';
 import { addOrder } from '../graphql/schema/order/add-order';
 import client from '../graphql/apollo-client';
 
@@ -85,7 +84,7 @@ function PlaceOrder() {
                 }
             });
             dispatch({ type: 'CART_CLEAR' });
-            Cookies.remove('cartItems');
+            localStorage.removeItem('cartItems');
             setLoading(false);
             router.push(`/order/${data.addOrder._id}`);
         } catch (err) {

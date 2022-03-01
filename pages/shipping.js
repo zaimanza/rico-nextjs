@@ -10,7 +10,6 @@ import React, { useContext, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { Store } from '../utils/Store';
 import useStyles from '../utils/styles';
-import Cookies from 'js-cookie';
 import { Controller, useForm } from 'react-hook-form';
 import CheckoutWizard from '../components/CheckoutWizard';
 
@@ -44,7 +43,7 @@ export default function Shipping() {
             type: 'SAVE_SHIPPING_ADDRESS',
             payload: { fullName, address, city, postalCode, country },
         });
-        Cookies.set('shippingAddress', JSON.stringify({
+        localStorage.setItem('shippingAddress', JSON.stringify({
             fullName,
             address,
             city,

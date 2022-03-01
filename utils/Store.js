@@ -1,25 +1,25 @@
-import Cookies from 'js-cookie';
+
 import { createContext, useReducer } from 'react';
 
 export const Store = createContext();
 
 
 const initialState = {
-    darkMode: Cookies.get('darkMode') === 'ON' ? true : false,
+    darkMode: typeof window !== 'undefined' ? localStorage.getItem('darkMode') === 'ON' ? true : false : false,
     cart: {
-        cartItems: Cookies.get('cartItems')
-            ? JSON.parse(Cookies.get('cartItems'))
-            : [],
+        cartItems: typeof window !== 'undefined' ? localStorage.getItem('cartItems')
+            ? JSON.parse(localStorage.getItem('cartItems'))
+            : [] : [],
     },
-    userInfo: Cookies.get('userInfo')
-        ? JSON.stringify(Cookies.get('userInfo'))
-        : null,
-    shippingAddress: Cookies.get('shippingAddress')
-        ? JSON.stringify(Cookies.get('shippingAddress'))
-        : {},
-    paymentMethod: Cookies.get('paymentMethod')
-        ? Cookies.get('paymentMethod')
-        : '',
+    userInfo: typeof window !== 'undefined' ? localStorage.getItem('userInfo')
+        ? JSON.stringify(localStorage.getItem('userInfo'))
+        : null : null,
+    shippingAddress: typeof window !== 'undefined' ? localStorage.getItem('shippingAddress')
+        ? JSON.stringify(localStorage.getItem('shippingAddress'))
+        : {} : {},
+    paymentMethod: typeof window !== 'undefined' ? localStorage.getItem('paymentMethod')
+        ? localStorage.getItem('paymentMethod')
+        : '' : '',
 };
 
 
@@ -40,14 +40,14 @@ function reducer(state, action) {
                     item.name === existItem.name ? newItem : item
                 )
                 : [...state.cart.cartItems, newItem];
-            Cookies.set('cartItems', JSON.stringify(cartItems));
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
             return { ...state, cart: { ...state.cart, cartItems } };
         }
         case 'CART_REMOVE_ITEM': {
             const cartItems = state.cart.cartItems.filter(
                 (item) => item._id !== action.payload._id
             );
-            Cookies.set('cartItems', JSON.stringify(cartItems));
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
             return { ...state, cart: { ...state.cart, cartItems } };
         }
         case 'CART_CLEAR':

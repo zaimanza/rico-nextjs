@@ -18,7 +18,6 @@ import {
 } from '@material-ui/core';
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
-import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
 
 export default function Layout({ title, description, children }) {
@@ -52,7 +51,7 @@ export default function Layout({ title, description, children }) {
     const darkModeChangeHandler = () => {
         dispatch({ type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON' });
         const newDarkMode = !darkMode;
-        Cookies.set('darkMode', newDarkMode ? 'ON' : 'OFF');
+        localStorage.setItem('darkMode', newDarkMode ? 'ON' : 'OFF');
     };
     const [anchorEl, setAnchorEl] = useState(null);
     const loginClickHandler = (e) => {
@@ -67,8 +66,8 @@ export default function Layout({ title, description, children }) {
     const logoutClickHandler = () => {
         setAnchorEl(null);
         dispatch({ type: 'USER_LOGOUT' });
-        Cookies.remove('userInfo');
-        Cookies.remove('cartItems');
+        localStorage.removeItem('userInfo');
+        localStorage.removeItem('cartItems');
         localStorage.removeItem("token");
 
         router.push('/');

@@ -12,7 +12,6 @@ import React, { useContext, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { Store } from '../utils/Store';
 import useStyles from '../utils/styles';
-import Cookies from 'js-cookie';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { userRegister } from '../graphql/schema/user/user-register';
@@ -52,7 +51,7 @@ export default function Register() {
                 }
             });
             dispatch({ type: 'USER_LOGIN', payload: data.userRegister });
-            Cookies.set('userInfo', data.userRegister);
+            localStorage.setItem('userInfo', data.userRegister);
             localStorage.setItem("token", data.userRegister.token);
             router.push(redirect || '/');
         } catch (err) {
