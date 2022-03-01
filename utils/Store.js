@@ -12,7 +12,7 @@ const initialState = {
             : [] : [],
     },
     userInfo: typeof window !== 'undefined' ? localStorage.getItem('userInfo')
-        ? JSON.stringify(localStorage.getItem('userInfo'))
+        ? JSON.parse(localStorage.getItem('userInfo'))
         : null : null,
     shippingAddress: typeof window !== 'undefined' ? localStorage.getItem('shippingAddress')
         ? JSON.stringify(localStorage.getItem('shippingAddress'))

@@ -56,7 +56,7 @@ function Profile() {
                 }
             });
             dispatch({ type: 'USER_LOGIN', payload: data.userUpdate });
-            localStorage.setItem('userInfo', data.userUpdate);
+            localStorage.setItem('userInfo', JSON.stringify(data.userUpdate));
 
             enqueueSnackbar('Profile updated successfully', { variant: 'success' });
         } catch (err) {

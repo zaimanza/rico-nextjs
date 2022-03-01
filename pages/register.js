@@ -51,7 +51,7 @@ export default function Register() {
                 }
             });
             dispatch({ type: 'USER_LOGIN', payload: data.userRegister });
-            localStorage.setItem('userInfo', data.userRegister);
+            localStorage.setItem('userInfo', JSON.stringify(data.userRegister));
             localStorage.setItem("token", data.userRegister.token);
             router.push(redirect || '/');
         } catch (err) {

@@ -46,7 +46,7 @@ export default function Login() {
             });
             if (data.userLogin.token) {
                 dispatch({ type: 'USER_LOGIN', payload: data.userLogin });
-                localStorage.setItem('userInfo', data.userLogin);
+                localStorage.setItem('userInfo', JSON.stringify(data.userLogin));
                 localStorage.setItem("token", data.userLogin.token);
             }
             router.push(redirect || '/');
