@@ -15,7 +15,7 @@ const initialState = {
         ? JSON.parse(localStorage.getItem('userInfo'))
         : null : null,
     shippingAddress: typeof window !== 'undefined' ? localStorage.getItem('shippingAddress')
-        ? JSON.stringify(localStorage.getItem('shippingAddress'))
+        ? JSON.parse(localStorage.getItem('shippingAddress'))
         : {} : {},
     paymentMethod: typeof window !== 'undefined' ? localStorage.getItem('paymentMethod')
         ? localStorage.getItem('paymentMethod')
