@@ -88,7 +88,7 @@ function ProductEdit({ params }) {
             };
             fetchData();
         }
-    }, []);
+    }, [productId, router, setValue, userInfo]);
     const submitHandler = async ({
         name,
         slug,
