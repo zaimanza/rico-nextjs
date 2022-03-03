@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
-import React, { useEffect, useContext, useReducer } from 'react';
+import React, { useEffect, useContext, useReducer, useState } from 'react';
 import {
     Grid,
     List,
@@ -21,7 +21,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { getProductById } from '../../../graphql/schema/admin/admin-product/get-product-by-id';
 import { updateProductById } from '../../../graphql/schema/admin/admin-product/update-product-by-id';
+import { s3ProductUploadUrl } from '../../../graphql/schema/product/s3-product-upload-url';
 import client from '../../../graphql/apollo-client';
+import Image from 'next/image';
 
 function reducer(state, action) {
     switch (action.type) {
@@ -37,6 +39,17 @@ function reducer(state, action) {
             return { ...state, loadingUpdate: false, errorUpdate: '' };
         case 'UPDATE_FAIL':
             return { ...state, loadingUpdate: false, errorUpdate: action.payload };
+        case 'UPLOAD_REQUEST':
+            return { ...state, loadingUpload: true, errorUpload: '' };
+        case 'UPLOAD_SUCCESS':
+            return {
+                ...state,
+                loadingUpload: false,
+                errorUpload: '',
+            };
+        case 'UPLOAD_FAIL':
+            return { ...state, loadingUpload: false, errorUpload: action.payload };
+
         default:
             return state;
     }
@@ -44,8 +57,10 @@ function reducer(state, action) {
 
 function ProductEdit({ params }) {
     const productId = params.id;
+    const [getToUploadToS3Obj, setToUploadToS3Obj] = useState({});
+    const [getImageViewData, setImageViewData] = useState("");
     const { state } = useContext(Store);
-    const [{ loading, error, loadingUpdate }, dispatch] = useReducer(reducer, {
+    const [{ loading, error, loadingUpdate, loadingUpload }, dispatch] = useReducer(reducer, {
         loading: true,
         error: '',
     });
@@ -89,12 +104,39 @@ function ProductEdit({ params }) {
             fetchData();
         }
     }, [productId, router, setValue, userInfo]);
+    const uploadHandler = async (e, imageField = 'image') => {
+        try {
+            const file = e.target.files[0];
+            const bodyFormData = new FormData();
+            bodyFormData.append('file', file);
+
+            dispatch({ type: 'UPLOAD_REQUEST' });
+
+            var reader = new FileReader();
+            reader.onload = function () {
+                setToUploadToS3Obj(file)
+                console.log(getToUploadToS3Obj)
+                dispatch({ type: 'UPLOAD_SUCCESS' });
+                setImageViewData(reader.result)
+                setValue(imageField, reader.result);
+                enqueueSnackbar('File uploaded successfully', { variant: 'success' });
+            }
+            reader.readAsDataURL(e.target.files[0]);
+            // now 
+            //this one waktu submit form
+            // call s3url
+            // upload to s3
+            // save to setValue
+        } catch (err) {
+            dispatch({ type: 'UPLOAD_FAIL', payload: "There's an error" });
+            enqueueSnackbar("There's an error", { variant: 'error' });
+        }
+    };
     const submitHandler = async ({
         name,
         slug,
         price,
         category,
-        image,
         brand,
         countInStock,
         description,
@@ -102,20 +144,45 @@ function ProductEdit({ params }) {
         closeSnackbar();
         try {
             dispatch({ type: 'UPDATE_REQUEST' });
+            let updateData = {
+                name: name,
+                slug: slug,
+                price: price,
+                category: category,
+                // image: image,
+                brand: brand,
+                countInStock: countInStock,
+                description: description,
+            }
+            const file = getToUploadToS3Obj
+
+            if (Object.keys(file).length === 0) {
+                //get upload url
+                const { data } = await client.query({
+                    query: s3ProductUploadUrl,
+                });
+                //put to aws
+                await fetch(data.s3ProductUploadUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    },
+                    body: file
+                }).catch(error => {
+                    enqueueSnackbar("There's an error", error);
+                    console.error('There was an error!', error);
+                })
+
+                const awsImageUrl = data.s3ProductUploadUrl.split('?')[0]
+                // add to updateData
+                updateData.image = awsImageUrl
+
+            }
             await client.query({
                 query: updateProductById,
                 variables: {
                     updateProductByIdId: productId,
-                    updateData: {
-                        name: name,
-                        slug: slug,
-                        price: price,
-                        category: category,
-                        image: image,
-                        brand: brand,
-                        countInStock: countInStock,
-                        description: description,
-                    },
+                    updateData: updateData,
                 }
             });
             dispatch({ type: 'UPDATE_SUCCESS' });
@@ -234,6 +301,14 @@ function ProductEdit({ params }) {
                                             ></Controller>
                                         </ListItem>
                                         <ListItem>
+                                            {getImageViewData && (
+                                                <Image
+                                                    src={getImageViewData}
+                                                    alt="Picture of the author"
+                                                    width={500}
+                                                    height={500}
+                                                />
+                                            )}
                                             <Controller
                                                 name="image"
                                                 control={control}
@@ -253,6 +328,13 @@ function ProductEdit({ params }) {
                                                     ></TextField>
                                                 )}
                                             ></Controller>
+                                        </ListItem>
+                                        <ListItem>
+                                            <Button variant="contained" component="label">
+                                                Upload File
+                                                <input type="file" onChange={uploadHandler} hidden />
+                                            </Button>
+                                            {loadingUpload && <CircularProgress />}
                                         </ListItem>
                                         <ListItem>
                                             <Controller
