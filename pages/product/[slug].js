@@ -61,6 +61,7 @@ export default function ProductScreen(props) {
             <Grid container spacing={1}>
                 <Grid item md={6} xs={12}>
                     <Image
+                        loader={() => product.image}
                         src={product.image}
                         alt={product.name}
                         width={640}

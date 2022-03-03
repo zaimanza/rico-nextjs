@@ -151,6 +151,7 @@ function PlaceOrder() {
                                                         <NextLink href={`/product/${item.slug}`} passHref>
                                                             <Link>
                                                                 <Image
+                                                                    loader={() => item.image}
                                                                     src={item.image}
                                                                     alt={item.name}
                                                                     width={50}
