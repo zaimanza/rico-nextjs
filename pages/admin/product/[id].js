@@ -24,6 +24,7 @@ import { updateProductById } from '../../../graphql/schema/admin/admin-product/u
 import { s3ProductUploadUrl } from '../../../graphql/schema/product/s3-product-upload-url';
 import client from '../../../graphql/apollo-client';
 import Image from 'next/image';
+import imageCompression from 'browser-image-compression';
 
 function reducer(state, action) {
     switch (action.type) {
@@ -93,6 +94,7 @@ function ProductEdit({ params }) {
                     setValue('slug', data.getProductById.slug);
                     setValue('price', data.getProductById.price);
                     setValue('image', data.getProductById.image);
+                    setImageViewData(data.getProductById.image)
                     setValue('category', data.getProductById.category);
                     setValue('brand', data.getProductById.brand);
                     setValue('countInStock', data.getProductById.countInStock);
@@ -115,7 +117,7 @@ function ProductEdit({ params }) {
             var reader = new FileReader();
             reader.onload = function () {
                 setToUploadToS3Obj(file)
-                console.log(getToUploadToS3Obj)
+                console.log(file)
                 dispatch({ type: 'UPLOAD_SUCCESS' });
                 setImageViewData(reader.result)
                 setValue(imageField, reader.result);
@@ -157,6 +159,12 @@ function ProductEdit({ params }) {
             const file = getToUploadToS3Obj
 
             if (Object.keys(file).length === 0) {
+                const options = {
+                    maxSizeMB: 1,
+                    maxWidthOrHeight: 600,
+                    useWebWorker: true
+                }
+                const compressedFile = await imageCompression(file, options);
                 //get upload url
                 const { data } = await client.query({
                     query: s3ProductUploadUrl,
@@ -167,7 +175,7 @@ function ProductEdit({ params }) {
                     headers: {
                         "Content-Type": "multipart/form-data"
                     },
-                    body: file
+                    body: compressedFile
                 }).catch(error => {
                     enqueueSnackbar("There's an error", error);
                     console.error('There was an error!', error);
@@ -303,31 +311,13 @@ function ProductEdit({ params }) {
                                         <ListItem>
                                             {getImageViewData && (
                                                 <Image
+                                                    loader={() => getImageViewData}
                                                     src={getImageViewData}
                                                     alt="Picture of the author"
-                                                    width={500}
-                                                    height={500}
+                                                    width={300}
+                                                    height={300}
                                                 />
                                             )}
-                                            <Controller
-                                                name="image"
-                                                control={control}
-                                                defaultValue=""
-                                                rules={{
-                                                    required: true,
-                                                }}
-                                                render={({ field }) => (
-                                                    <TextField
-                                                        variant="outlined"
-                                                        fullWidth
-                                                        id="image"
-                                                        label="Image"
-                                                        error={Boolean(errors.image)}
-                                                        helperText={errors.image ? 'Image is required' : ''}
-                                                        {...field}
-                                                    ></TextField>
-                                                )}
-                                            ></Controller>
                                         </ListItem>
                                         <ListItem>
                                             <Button variant="contained" component="label">
