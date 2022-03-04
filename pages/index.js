@@ -1,18 +1,10 @@
 import {
   Grid,
-  Card,
-  CardActionArea,
-  CardMedia,
-  CardContent,
-  Typography,
-  CardActions,
-  Button,
 } from '@material-ui/core';
-import { Rating } from '@material-ui/lab';
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import Layout from '../components/Layout';
+import ProductItem from '../components/ProductItem';
 import client from '../graphql/apollo-client';
 import { checkStockOneProduct } from '../graphql/schema/product/check-stock-one-product';
 import { getManyProduct } from '../graphql/schema/product/get-many-product';
@@ -47,31 +39,10 @@ export default function Home(props) {
         <Grid container spacing={3}>
           {products.map((product) => (
             <Grid item md={4} key={product.name}>
-              <Card>
-                <NextLink href={`/product/${product.slug}`} passHref>
-                  <CardActionArea>
-                    <CardMedia
-                      component="img"
-                      image={product.image}
-                      title={product.name}
-                    ></CardMedia>
-                    <CardContent>
-                      <Typography>{product.name}</Typography>
-                      <Rating value={product.rating} readOnly></Rating>
-                    </CardContent>
-                  </CardActionArea>
-                </NextLink>
-                <CardActions>
-                  <Typography>${product.price}</Typography>
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={() => addToCartHandler(product)}
-                  >
-                    Add to cart
-                  </Button>
-                </CardActions>
-              </Card>
+              <ProductItem
+                product={product}
+                addToCartHandler={addToCartHandler}
+              />
             </Grid>
           ))}
         </Grid>
