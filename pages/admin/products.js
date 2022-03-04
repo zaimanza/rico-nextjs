@@ -26,6 +26,7 @@ import { getManyProduct } from '../../graphql/schema/product/get-many-product';
 import client from '../../graphql/apollo-client';
 import { useSnackbar } from 'notistack';
 import { deleteProductById } from '../../graphql/schema/admin/admin-product/delete-product-by-id';
+import { addDummyProduct } from '../../graphql/schema/admin/admin-product/add-dummy-product';
 
 function reducer(state, action) {
     switch (action.type) {
@@ -100,16 +101,13 @@ function AdminDashboard() {
         }
         try {
             dispatch({ type: 'CREATE_REQUEST' });
-            const { data } = await axios.post(
-                `/api/admin/products`,
-                {},
-                {
-                    headers: { authorization: `Bearer ${userInfo.token}` },
-                }
-            );
+            console.log("HI")
+            const { data } = await client.query({
+                query: addDummyProduct,
+            });
             dispatch({ type: 'CREATE_SUCCESS' });
             enqueueSnackbar('Product created successfully', { variant: 'success' });
-            router.push(`/admin/product/${data.product._id}`);
+            router.push(`/admin/product/${data.addDummyProduct._id}`);
         } catch (err) {
             dispatch({ type: 'CREATE_FAIL' });
             enqueueSnackbar("There's an error", { variant: 'error' });
