@@ -47,7 +47,7 @@ export default function ProductScreen(props) {
                 query: updateUserReview,
                 variables: {
                     updateUserReviewId: product._id,
-                    rating: rating,
+                    rating: parseInt(rating),
                     comment: comment
                 }
             });
@@ -61,10 +61,7 @@ export default function ProductScreen(props) {
     };
 
     const isoStringToString = (isoDate) => {
-        console.log("dating")
-        console.log(isoDate)
         let date = new Date(isoDate);
-        console.log(date)
         let year = date.getFullYear();
         let month = date.getMonth() + 1;
         let dt = date.getDate();
