@@ -4,14 +4,15 @@ export const getProductManyReviewById = gql`
 query GetProductManyReviewById($getProductManyReviewByIdId: String!) {
   getProductManyReviewById(id: $getProductManyReviewByIdId) {
     user {
-      _id
-      name
-      email
       isAdmin
+      email
+      name
+      _id
     }
     name
     rating
     comment
+    createdAt
   }
 }
 `

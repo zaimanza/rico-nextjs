@@ -18,11 +18,13 @@ import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
 import client from '../../graphql/apollo-client';
 import { getOneProduct } from '../../graphql/schema/product/get-one-product';
+import { updateUserReview } from '../../graphql/schema/product/review/update-user-review';
 import { Store } from '../../utils/Store';
 import { checkStockOneProduct } from '../../graphql/schema/product/check-stock-one-product';
 import { useRouter } from 'next/router';
 import { Rating } from '@material-ui/lab';
 import { useSnackbar } from 'notistack';
+import { getProductManyReviewById } from '../../graphql/schema/product/review/get-product-many-review-by-id';
 
 export default function ProductScreen(props) {
     const router = useRouter();
@@ -41,16 +43,14 @@ export default function ProductScreen(props) {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post(
-                `/api/products/${product._id}/reviews`,
-                {
-                    rating,
-                    comment,
-                },
-                {
-                    headers: { authorization: `Bearer ${userInfo.token}` },
+            await client.query({
+                query: updateUserReview,
+                variables: {
+                    updateUserReviewId: product._id,
+                    rating: rating,
+                    comment: comment
                 }
-            );
+            });
             setLoading(false);
             enqueueSnackbar('Review submitted successfully', { variant: 'success' });
             fetchReviews();
@@ -60,10 +60,34 @@ export default function ProductScreen(props) {
         }
     };
 
+    const isoStringToString = (isoDate) => {
+        console.log("dating")
+        console.log(isoDate)
+        let date = new Date(isoDate);
+        console.log(date)
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1;
+        let dt = date.getDate();
+
+        if (dt < 10) {
+            dt = '0' + dt;
+        }
+        if (month < 10) {
+            month = '0' + month;
+        }
+
+        return year + '-' + month + '-' + dt
+    }
+
     const fetchReviews = async () => {
         try {
-            const { data } = await axios.get(`/api/products/${product._id}/reviews`);
-            setReviews(data);
+            const { data } = await client.query({
+                query: getProductManyReviewById,
+                variables: {
+                    getProductManyReviewByIdId: product._id
+                }
+            });
+            setReviews(data.getProductManyReviewById);
         } catch (err) {
             enqueueSnackbar("There's an error", { variant: 'error' });
         }
@@ -192,7 +216,7 @@ export default function ProductScreen(props) {
                                 <Typography>
                                     <strong>{review.name}</strong>
                                 </Typography>
-                                <Typography>{review.createdAt.substring(0, 10)}</Typography>
+                                <Typography>{isoStringToString(review.createdAt)}</Typography>
                             </Grid>
                             <Grid item>
                                 <Rating value={review.rating} readOnly></Rating>
