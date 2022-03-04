@@ -24,6 +24,8 @@ import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
 import { getManyProduct } from '../../graphql/schema/product/get-many-product';
 import client from '../../graphql/apollo-client';
+import { useSnackbar } from 'notistack';
+import { deleteProductById } from '../../graphql/schema/admin/admin-product/delete-product-by-id';
 
 function reducer(state, action) {
     switch (action.type) {
@@ -33,6 +35,20 @@ function reducer(state, action) {
             return { ...state, loading: false, products: action.payload, error: '' };
         case 'FETCH_FAIL':
             return { ...state, loading: false, error: action.payload };
+        case 'CREATE_REQUEST':
+            return { ...state, loadingCreate: true };
+        case 'CREATE_SUCCESS':
+            return { ...state, loadingCreate: false };
+        case 'CREATE_FAIL':
+            return { ...state, loadingCreate: false };
+        case 'DELETE_REQUEST':
+            return { ...state, loadingDelete: true };
+        case 'DELETE_SUCCESS':
+            return { ...state, loadingDelete: false, successDelete: true };
+        case 'DELETE_FAIL':
+            return { ...state, loadingDelete: false };
+        case 'DELETE_RESET':
+            return { ...state, loadingDelete: false, successDelete: false };
         default:
             state;
     }
@@ -44,7 +60,10 @@ function AdminDashboard() {
     const classes = useStyles();
     const { userInfo } = state;
 
-    const [{ loading, error, products }, dispatch] = useReducer(reducer, {
+    const [
+        { loading, error, products, loadingCreate, successDelete, loadingDelete },
+        dispatch,
+    ] = useReducer(reducer, {
         loading: true,
         products: [],
         error: '',
@@ -67,8 +86,55 @@ function AdminDashboard() {
                 dispatch({ type: 'FETCH_FAIL', payload: "There's an error" });
             }
         };
-        fetchData();
-    }, [router, userInfo]);
+        if (successDelete) {
+            dispatch({ type: 'DELETE_RESET' });
+        } else {
+            fetchData();
+        }
+    }, [router, successDelete, userInfo]);
+
+    const { enqueueSnackbar } = useSnackbar();
+    const createHandler = async () => {
+        if (!window.confirm('Are you sure?')) {
+            return;
+        }
+        try {
+            dispatch({ type: 'CREATE_REQUEST' });
+            const { data } = await axios.post(
+                `/api/admin/products`,
+                {},
+                {
+                    headers: { authorization: `Bearer ${userInfo.token}` },
+                }
+            );
+            dispatch({ type: 'CREATE_SUCCESS' });
+            enqueueSnackbar('Product created successfully', { variant: 'success' });
+            router.push(`/admin/product/${data.product._id}`);
+        } catch (err) {
+            dispatch({ type: 'CREATE_FAIL' });
+            enqueueSnackbar("There's an error", { variant: 'error' });
+        }
+    };
+    const deleteHandler = async (productId) => {
+        if (!window.confirm('Are you sure?')) {
+            return;
+        }
+        try {
+            dispatch({ type: 'DELETE_REQUEST' });
+            await client.query({
+                query: deleteProductById,
+                variables: {
+                    deleteProductByIdId: productId,
+                }
+            });
+            dispatch({ type: 'DELETE_SUCCESS' });
+            enqueueSnackbar('Product deleted successfully', { variant: 'success' });
+        } catch (err) {
+            dispatch({ type: 'DELETE_FAIL' });
+            enqueueSnackbar("There's an error", { variant: 'error' });
+        }
+    };
+
     return (
         <Layout title="Products">
             <Grid container spacing={1}>
@@ -97,9 +163,24 @@ function AdminDashboard() {
                     <Card className={classes.section}>
                         <List>
                             <ListItem>
-                                <Typography component="h1" variant="h1">
-                                    Products
-                                </Typography>
+                                <Grid container alignItems="center">
+                                    <Grid item xs={6}>
+                                        <Typography component="h1" variant="h1">
+                                            Products
+                                        </Typography>
+                                        {loadingDelete && <CircularProgress />}
+                                    </Grid>
+                                    <Grid align="right" item xs={6}>
+                                        <Button
+                                            onClick={createHandler}
+                                            color="primary"
+                                            variant="contained"
+                                        >
+                                            Create
+                                        </Button>
+                                        {loadingCreate && <CircularProgress />}
+                                    </Grid>
+                                </Grid>
                             </ListItem>
 
                             <ListItem>
@@ -141,7 +222,11 @@ function AdminDashboard() {
                                                                     Edit
                                                                 </Button>
                                                             </NextLink>{' '}
-                                                            <Button size="small" variant="contained">
+                                                            <Button
+                                                                onClick={() => deleteHandler(product._id)}
+                                                                size="small"
+                                                                variant="contained"
+                                                            >
                                                                 Delete
                                                             </Button>
                                                         </TableCell>
