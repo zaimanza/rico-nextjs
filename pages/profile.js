@@ -39,7 +39,7 @@ function Profile() {
         }
         setValue('name', userInfo.name);
         setValue('email', userInfo.email);
-    }, [router, setValue, userInfo]);
+    }, []);
     const submitHandler = async ({ name, email, password, confirmPassword }) => {
         closeSnackbar();
         if (password !== confirmPassword) {

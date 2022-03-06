@@ -100,7 +100,7 @@ export default function Layout({ title, description, children }) {
 
     useEffect(() => {
         fetchCategories();
-    }, [fetchCategories]);
+    }, []);
 
     const darkModeChangeHandler = () => {
         dispatch({ type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON' });

@@ -142,7 +142,7 @@ function Order({ params }) {
             };
             loadPaypalScript();
         }
-    }, [order, orderId, paypalDispatch, router, successDeliver, successPay, userInfo]);
+    }, [order, successDeliver, successPay]);
     const { enqueueSnackbar } = useSnackbar();
 
 

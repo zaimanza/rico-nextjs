@@ -105,7 +105,7 @@ function ProductEdit({ params }) {
             };
             fetchData();
         }
-    }, [productId, router, setValue, userInfo]);
+    }, []);
     const uploadHandler = async (e, imageField = 'image') => {
         try {
             const file = e.target.files[0];

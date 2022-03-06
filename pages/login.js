@@ -32,7 +32,7 @@ export default function Login() {
         if (userInfo) {
             router.push('/');
         }
-    }, [router, userInfo]);
+    }, []);
     const classes = useStyles();
     const submitHandler = async ({ email, password }) => {
         closeSnackbar();

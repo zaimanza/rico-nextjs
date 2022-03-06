@@ -32,7 +32,7 @@ export default function Payment() {
         } else {
             setPaymentMethod(localStorage.getItem('paymentMethod') || '');
         }
-    }, [router, shippingAddress.address]);
+    }, []);
     const submitHandler = (e) => {
         closeSnackbar();
         e.preventDefault();
