@@ -10,8 +10,6 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect } from 'react';
 import Layout from '../components/Layout';
-import client from '../graphql/apollo-client';
-import { userLogin } from '../graphql/schema/user/user-login';
 import { Store } from '../utils/Store';
 import useStyles from '../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
