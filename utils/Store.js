@@ -20,6 +20,7 @@ const initialState = {
     paymentMethod: typeof window !== 'undefined' ? localStorage.getItem('paymentMethod')
         ? localStorage.getItem('paymentMethod')
         : '' : '',
+    products: [],
 };
 
 
@@ -54,6 +55,8 @@ function reducer(state, action) {
             return { ...state, cart: { ...state.cart, cartItems: [] } };
         case 'USER_LOGIN':
             return { ...state, userInfo: action.payload };
+        case 'ADD_PRODUCTS':
+            return { ...state, products: action.payload };
         case 'USER_LOGOUT':
             return {
                 ...state,
