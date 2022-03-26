@@ -16,6 +16,7 @@ import { Store } from '../utils/Store';
 import useStyles from '../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
+import StoreOwnerLogin from '../modules/store-owner-module';
 
 export default function Login() {
     const {
@@ -37,18 +38,7 @@ export default function Login() {
     const submitHandler = async ({ email, password }) => {
         closeSnackbar();
         try {
-            const { data } = await client.query({
-                query: userLogin,
-                variables: {
-                    email: email,
-                    password: password,
-                }
-            });
-            if (data.userLogin.token) {
-                dispatch({ type: 'USER_LOGIN', payload: data.userLogin });
-                localStorage.setItem('userInfo', JSON.stringify(data.userLogin));
-                localStorage.setItem("token", data.userLogin.token);
-            }
+            await StoreOwnerLogin(dispatch, { email: email, password: password, })
             router.push(redirect || '/');
         } catch (err) {
             console.log(err);
