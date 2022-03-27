@@ -22,7 +22,7 @@ export default function Login() {
         control,
         formState: { errors },
     } = useForm();
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { closeSnackbar } = useSnackbar();
     const router = useRouter();
     const { redirect } = router.query; // login?redirect=/shipping
     const { state } = useContext(Store);
