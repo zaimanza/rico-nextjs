@@ -35,12 +35,14 @@ export default function Login() {
         }
     }, []);
     const classes = useStyles();
+
     const submitHandler = async ({ email, password }) => {
         closeSnackbar();
         const data = await storeOwnerLogin({ email: email, password: password, })
         if (data)
             router.push(redirect || '/');
     };
+
     return (
         <Layout title="Login">
             <form onSubmit={handleSubmit(submitHandler)} className={classes.form}>
