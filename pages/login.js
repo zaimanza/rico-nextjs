@@ -14,7 +14,7 @@ import { Store } from '../utils/Store';
 import useStyles from '../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
-import StoreOwnerLogin from '../modules/store-owner-module';
+import useStoreOwnerModule from '../modules/store-owner-module';
 
 export default function Login() {
     const {
@@ -27,6 +27,8 @@ export default function Login() {
     const { redirect } = router.query; // login?redirect=/shipping
     const { state, dispatch } = useContext(Store);
     const { userInfo } = state;
+
+    const [storeOwnerLogin] = useStoreOwnerModule()
     useEffect(() => {
         if (userInfo) {
             router.push('/');
@@ -36,14 +38,15 @@ export default function Login() {
     const submitHandler = async ({ email, password }) => {
         closeSnackbar();
         try {
-            await StoreOwnerLogin(dispatch, { email: email, password: password, })
+            await storeOwnerLogin({ email: email, password: password, })
+            // await StoreOwnerLogin(dispatch, { email: email, password: password, })
             router.push(redirect || '/');
         } catch (err) {
             console.log(err);
-            enqueueSnackbar(
-                "There's an error",
-                { variant: 'error' }
-            );
+            // enqueueSnackbar(
+            //     "There's an error",
+            //     { variant: 'error' }
+            // );
         }
     };
     return (
