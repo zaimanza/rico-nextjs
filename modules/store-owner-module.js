@@ -4,7 +4,7 @@ import { userLogin } from '../graphql/schema/user/user-login';
 // import { Store } from '../utils/Store';
 
 const StoreOwnerLogin = async (dispatch, variables) => {
-    console.log(variables)
+    // console.log(variables)
     const data = await queryGraphql(userLogin, variables)
 
     if (data.userLogin.token) {
