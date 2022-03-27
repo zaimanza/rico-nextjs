@@ -21,6 +21,7 @@ function useQueryGraphql() {
                 errors[0].message,
                 { variant: 'error' }
             );
+            return {}
         }
 
         return data

@@ -25,7 +25,7 @@ export default function Login() {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const router = useRouter();
     const { redirect } = router.query; // login?redirect=/shipping
-    const { state, dispatch } = useContext(Store);
+    const { state } = useContext(Store);
     const { userInfo } = state;
 
     const [storeOwnerLogin] = useStoreOwnerModule()
@@ -37,17 +37,9 @@ export default function Login() {
     const classes = useStyles();
     const submitHandler = async ({ email, password }) => {
         closeSnackbar();
-        try {
-            await storeOwnerLogin({ email: email, password: password, })
-            // await StoreOwnerLogin(dispatch, { email: email, password: password, })
+        const data = await storeOwnerLogin({ email: email, password: password, })
+        if (data)
             router.push(redirect || '/');
-        } catch (err) {
-            console.log(err);
-            // enqueueSnackbar(
-            //     "There's an error",
-            //     { variant: 'error' }
-            // );
-        }
     };
     return (
         <Layout title="Login">
