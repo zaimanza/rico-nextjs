@@ -46,7 +46,18 @@ function useApolloClient() {
                     console.log(message)
                     enqueueSnackbar(
                         message,
-                        { variant: 'error' }
+                        {
+                            // variant: 'error',
+                            // variant: 'default',
+                            // variant: 'success',
+                            variant: 'warning',
+                            // variant: 'info',
+                            anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            },
+                            preventDuplicate: true,
+                        }
                     )
                 }
             )
