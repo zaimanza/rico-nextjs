@@ -18,7 +18,7 @@ import { Store } from '../utils/Store';
 import Rating from '@material-ui/lab/Rating';
 import { Pagination } from '@material-ui/lab';
 import { getPublicProductById } from '../graphql/schema/product/get-public-product-by-id';
-import client from '../graphql/apollo-client';
+import client from '../graphql/apollo-client-old';
 
 const PAGE_SIZE = 3;
 

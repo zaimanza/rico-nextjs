@@ -30,7 +30,7 @@ import {
 import { Store } from '../../utils/Store';
 import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
-import client from '../../graphql/apollo-client';
+import client from '../../graphql/apollo-client-old';
 import { dashboardSummary } from '../../graphql/schema/admin/dashboard-summary';
 
 function reducer(state, action) {

@@ -24,7 +24,7 @@ import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
 import { useSnackbar } from 'notistack';
 import { getAdminAllUser } from '../../graphql/schema/admin/admin-user/get-admin-all-user';
-import client from '../../graphql/apollo-client';
+import client from '../../graphql/apollo-client-old';
 import { deleteAdminUserById } from '../../graphql/schema/admin/admin-user/delete-admin-user-by-id';
 
 function reducer(state, action) {

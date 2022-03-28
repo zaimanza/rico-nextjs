@@ -25,7 +25,7 @@ import useStyles from '../utils/styles';
 import CheckoutWizard from '../components/checkoutWizard';
 import { useSnackbar } from 'notistack';
 import { addOrder } from '../graphql/schema/order/add-order';
-import client from '../graphql/apollo-client';
+import client from '../graphql/apollo-client-old';
 
 function PlaceOrder() {
     const classes = useStyles();

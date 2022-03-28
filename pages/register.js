@@ -15,7 +15,7 @@ import useStyles from '../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { userRegister } from '../graphql/schema/user/user-register';
-import client from '../graphql/apollo-client';
+import client from '../graphql/apollo-client-old';
 
 export default function Register() {
     const {

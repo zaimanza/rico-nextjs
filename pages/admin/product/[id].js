@@ -22,7 +22,7 @@ import { useSnackbar } from 'notistack';
 import { getProductById } from '../../../graphql/schema/admin/admin-product/get-product-by-id';
 import { updateProductById } from '../../../graphql/schema/admin/admin-product/update-product-by-id';
 import { s3ProductUploadUrl } from '../../../graphql/schema/product/s3-product-upload-url';
-import client from '../../../graphql/apollo-client';
+import client from '../../../graphql/apollo-client-old';
 import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
 

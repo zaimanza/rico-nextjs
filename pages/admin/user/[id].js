@@ -21,7 +21,7 @@ import Layout from '../../../components/Layout';
 import useStyles from '../../../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
-import client from '../../../graphql/apollo-client';
+import client from '../../../graphql/apollo-client-old';
 import { getAdminUserById } from '../../../graphql/schema/admin/admin-user/get-admin-user-by-id';
 import { updateAdminUserById } from '../../../graphql/schema/admin/admin-user/update-admin-user-by-id';
 

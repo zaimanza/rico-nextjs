@@ -26,7 +26,7 @@ import { useSnackbar } from 'notistack';
 import { getOneOrder } from '../../graphql/schema/order/get-one-order';
 import { getClientId } from '../../graphql/schema/paypal/get-client-id';
 import { payOrder } from '../../graphql/schema/order/pay-order';
-import client from '../../graphql/apollo-client';
+import client from '../../graphql/apollo-client-old';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { updateOrderDeliver } from '../../graphql/schema/order/update-order-deliver';
 function reducer(state, action) {

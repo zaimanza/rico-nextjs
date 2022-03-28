@@ -23,7 +23,7 @@ import { Store } from '../../utils/Store';
 import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
 import { getManyOrder } from '../../graphql/schema/admin/get-many-order';
-import client from '../../graphql/apollo-client';
+import client from '../../graphql/apollo-client-old';
 
 function reducer(state, action) {
     switch (action.type) {

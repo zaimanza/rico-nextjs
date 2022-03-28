@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import ProductItem from '../components/ProductItem';
-import client from '../graphql/apollo-client';
+import client from '../graphql/apollo-client-old';
 import { checkStockOneProduct } from '../graphql/schema/product/check-stock-one-product';
 import { getManyProduct } from '../graphql/schema/product/get-many-product';
 import { Store } from '../utils/Store';

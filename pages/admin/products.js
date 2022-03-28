@@ -23,7 +23,7 @@ import { Store } from '../../utils/Store';
 import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
 import { getManyProduct } from '../../graphql/schema/product/get-many-product';
-import client from '../../graphql/apollo-client';
+import client from '../../graphql/apollo-client-old';
 import { useSnackbar } from 'notistack';
 import { deleteProductById } from '../../graphql/schema/admin/admin-product/delete-product-by-id';
 import { addDummyProduct } from '../../graphql/schema/admin/admin-product/add-dummy-product';

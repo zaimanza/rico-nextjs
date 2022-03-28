@@ -16,7 +16,7 @@ import {
 // import data from '../../utils/data';
 import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
-import client from '../../graphql/apollo-client';
+import client from '../../graphql/apollo-client-old';
 import { getOneProduct } from '../../graphql/schema/product/get-one-product';
 import { updateUserReview } from '../../graphql/schema/product/review/update-user-review';
 import { Store } from '../../utils/Store';

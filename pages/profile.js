@@ -18,7 +18,7 @@ import useStyles from '../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { userUpdate } from '../graphql/schema/user/user-update';
-import client from '../graphql/apollo-client';
+import client from '../graphql/apollo-client-old';
 
 function Profile() {
     const { state, dispatch } = useContext(Store);

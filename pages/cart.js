@@ -21,7 +21,7 @@ import {
     List,
     ListItem,
 } from '@material-ui/core';
-import client from '../graphql/apollo-client';
+import client from '../graphql/apollo-client-old';
 import { checkStockOneProduct } from '../graphql/schema/product/check-stock-one-product';
 import { useRouter } from 'next/router';
 

@@ -35,7 +35,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
-import client from '../graphql/apollo-client';
+import client from '../graphql/apollo-client-old';
 
 export default function Layout({ title, description, children }) {
     const router = useRouter();

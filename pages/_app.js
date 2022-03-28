@@ -1,7 +1,7 @@
 import { ApolloProvider } from '@apollo/client';
 import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
-import client from '../graphql/apollo-client';
+import client from '../graphql/apollo-client-old';
 import '../styles/globals.css';
 import { StoreProvider } from '../utils/Store';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
