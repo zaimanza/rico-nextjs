@@ -7,7 +7,13 @@ function useGraphql() {
     const [client] = useApolloClient()
 
     const query = async (query, variables) => {
-        const { data, errors } = await client.query({ query: query, variables: variables, })
+        let options = { query: query, }
+
+        if (Object.keys(variables).length !== 0) {
+            options.variables = variables
+        }
+
+        const { data, errors } = await client.query(options)
 
         // handle if error
         if (errors) {
@@ -19,7 +25,13 @@ function useGraphql() {
     }
 
     const mutate = async (mutation, variables) => {
-        const { data, errors } = await client.mutate({ mutation: mutation, variables: variables })
+        let options = { mutation: mutation, }
+
+        if (Object.keys(variables).length !== 0) {
+            options.variables = variables
+        }
+
+        const { data, errors } = await client.mutate(options)
 
         // handle if error
         if (errors) {
