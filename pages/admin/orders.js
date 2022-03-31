@@ -23,7 +23,8 @@ import { Store } from '../../utils/Store';
 import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
 import { getManyOrder } from '../../graphql/schema/admin/get-many-order';
-import client from '../../graphql/apollo-client-old';
+import useGraphql from '../../graphql/useGraphql';
+
 
 function reducer(state, action) {
     switch (action.type) {
@@ -49,6 +50,7 @@ function AdminOrders() {
         orders: [],
         error: '',
     });
+    const [query] = useGraphql()
 
     useEffect(() => {
         if (!userInfo) {
@@ -57,9 +59,7 @@ function AdminOrders() {
         const fetchData = async () => {
             try {
                 dispatch({ type: 'FETCH_REQUEST' });
-                const { data } = await client.query({
-                    query: getManyOrder,
-                });
+                const data = await query(getManyOrder, {});
                 dispatch({ type: 'FETCH_SUCCESS', payload: data.getManyOrder });
             } catch (err) {
                 dispatch({ type: 'FETCH_FAIL', payload: "there's an error" });

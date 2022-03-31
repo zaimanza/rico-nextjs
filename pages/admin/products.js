@@ -23,10 +23,11 @@ import { Store } from '../../utils/Store';
 import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
 import { getManyProduct } from '../../graphql/schema/product/get-many-product';
-import client from '../../graphql/apollo-client-old';
+
 import { useSnackbar } from 'notistack';
 import { deleteProductById } from '../../graphql/schema/admin/admin-product/delete-product-by-id';
 import { addDummyProduct } from '../../graphql/schema/admin/admin-product/add-dummy-product';
+import useGraphql from '../../graphql/useGraphql';
 
 function reducer(state, action) {
     switch (action.type) {
@@ -70,6 +71,8 @@ function AdminProdcuts() {
         error: '',
     });
 
+    const [query] = useGraphql()
+
     useEffect(() => {
         if (!userInfo) {
             router.push('/login');
@@ -78,9 +81,7 @@ function AdminProdcuts() {
             try {
                 dispatch({ type: 'FETCH_REQUEST' });
 
-                const { data } = await client.query({
-                    query: getManyProduct,
-                });
+                const data = await query(getManyProduct, {});
 
                 dispatch({ type: 'FETCH_SUCCESS', payload: data.getManyProduct });
             } catch (err) {
@@ -102,9 +103,7 @@ function AdminProdcuts() {
         try {
             dispatch({ type: 'CREATE_REQUEST' });
             console.log("HI")
-            const { data } = await client.query({
-                query: addDummyProduct,
-            });
+            const data = await query(addDummyProduct, {});
             dispatch({ type: 'CREATE_SUCCESS' });
             enqueueSnackbar('Product created successfully', { variant: 'success' });
             router.push(`/admin/product/${data.addDummyProduct._id}`);
@@ -119,11 +118,8 @@ function AdminProdcuts() {
         }
         try {
             dispatch({ type: 'DELETE_REQUEST' });
-            await client.query({
-                query: deleteProductById,
-                variables: {
-                    deleteProductByIdId: productId,
-                }
+            await query(deleteProductById, {
+                deleteProductByIdId: productId,
             });
             dispatch({ type: 'DELETE_SUCCESS' });
             enqueueSnackbar('Product deleted successfully', { variant: 'success' });

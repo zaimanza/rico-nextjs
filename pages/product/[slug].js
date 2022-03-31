@@ -16,7 +16,6 @@ import {
 // import data from '../../utils/data';
 import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
-import client from '../../graphql/apollo-client-old';
 import { getOneProduct } from '../../graphql/schema/product/get-one-product';
 import { updateUserReview } from '../../graphql/schema/product/review/update-user-review';
 import { Store } from '../../utils/Store';
@@ -25,6 +24,8 @@ import { useRouter } from 'next/router';
 import { Rating } from '@material-ui/lab';
 import { useSnackbar } from 'notistack';
 import { getProductManyReviewById } from '../../graphql/schema/product/review/get-product-many-review-by-id';
+import useGraphql from '../../graphql/useGraphql';
+import client from '../../graphql/apollo-client-old';
 
 export default function ProductScreen(props) {
     const router = useRouter();
@@ -33,6 +34,7 @@ export default function ProductScreen(props) {
     const { product } = props;
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
+    const [query] = useGraphql()
 
     const [reviews, setReviews] = useState([]);
     const [rating, setRating] = useState(0);
@@ -43,13 +45,10 @@ export default function ProductScreen(props) {
         e.preventDefault();
         setLoading(true);
         try {
-            await client.query({
-                query: updateUserReview,
-                variables: {
-                    updateUserReviewId: product._id,
-                    rating: parseInt(rating),
-                    comment: comment
-                }
+            await query(updateUserReview, {
+                updateUserReviewId: product._id,
+                rating: parseInt(rating),
+                comment: comment
             });
             setLoading(false);
             enqueueSnackbar('Review submitted successfully', { variant: 'success' });
@@ -78,11 +77,8 @@ export default function ProductScreen(props) {
 
     const fetchReviews = async () => {
         try {
-            const { data } = await client.query({
-                query: getProductManyReviewById,
-                variables: {
-                    getProductManyReviewByIdId: product._id
-                }
+            const data = await query(getProductManyReviewById, {
+                getProductManyReviewByIdId: product._id
             });
             setReviews(data.getProductManyReviewById);
         } catch (err) {
@@ -101,12 +97,9 @@ export default function ProductScreen(props) {
     const addToCartHandler = async () => {
         const existItem = state.cart.cartItems.find((x) => x._id === product._id);
         const quantity = existItem ? existItem.quantity + 1 : 1;
-        const { data } = await client.query({
-            query: checkStockOneProduct,
-            variables: {
-                checkStockOneProductId: product._id,
-                quantity: quantity
-            }
+        const data = await query(checkStockOneProduct, {
+            checkStockOneProductId: product._id,
+            quantity: quantity
         });
         if (!data.checkStockOneProduct) {
             window.alert('Sorry. Product is out of stock');

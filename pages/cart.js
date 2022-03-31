@@ -21,24 +21,22 @@ import {
     List,
     ListItem,
 } from '@material-ui/core';
-import client from '../graphql/apollo-client-old';
 import { checkStockOneProduct } from '../graphql/schema/product/check-stock-one-product';
 import { useRouter } from 'next/router';
+import useGraphql from '../graphql/useGraphql';
 
 function CartScreen() {
+    const [query] = useGraphql()
     const router = useRouter();
     const { state, dispatch } = useContext(Store);
     const {
         cart: { cartItems },
     } = state;
     const updateCartHandler = async (item, quantity) => {
-        const { data } = await client.query({
-            query: checkStockOneProduct,
-            variables: {
-                checkStockOneProductId: item._id,
-                quantity: quantity
-            }
-        });
+        const data = await query(checkStockOneProduct, {
+            checkStockOneProductId: item._id,
+            quantity: quantity
+        })
         if (!data.checkStockOneProduct) {
             window.alert('Sorry. Product is out of stock');
             return;

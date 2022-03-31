@@ -22,7 +22,8 @@ import { Store } from '../utils/Store';
 import Layout from '../components/Layout';
 import useStyles from '../utils/styles';
 import { getUserManyOrder } from '../graphql/schema/order/get-user-many-order';
-import client from '../graphql/apollo-client-old';
+import useGraphql from '../graphql/useGraphql';
+
 
 function reducer(state, action) {
     switch (action.type) {
@@ -49,6 +50,8 @@ function OrderHistory() {
         error: '',
     });
 
+    const [query] = useGraphql()
+
     useEffect(() => {
         if (!userInfo) {
             router.push('/login');
@@ -57,9 +60,7 @@ function OrderHistory() {
             try {
                 dispatch({ type: 'FETCH_REQUEST' });
 
-                const { data } = await client.query({
-                    query: getUserManyOrder,
-                });
+                const data = await query(getUserManyOrder, {});
                 dispatch({ type: 'FETCH_SUCCESS', payload: data.getUserManyOrder });
             } catch (err) {
                 dispatch({ type: 'FETCH_FAIL', payload: "There's an error" });

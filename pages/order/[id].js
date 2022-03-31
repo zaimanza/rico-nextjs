@@ -26,9 +26,10 @@ import { useSnackbar } from 'notistack';
 import { getOneOrder } from '../../graphql/schema/order/get-one-order';
 import { getClientId } from '../../graphql/schema/paypal/get-client-id';
 import { payOrder } from '../../graphql/schema/order/pay-order';
-import client from '../../graphql/apollo-client-old';
+
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { updateOrderDeliver } from '../../graphql/schema/order/update-order-deliver';
+import useGraphql from '../../graphql/useGraphql';
 function reducer(state, action) {
     switch (action.type) {
         case 'FETCH_REQUEST':
@@ -94,6 +95,8 @@ function Order({ params }) {
         deliveredAt,
     } = order;
 
+    const [query] = useGraphql()
+
     useEffect(() => {
         if (!userInfo) {
             return router.push('/login');
@@ -101,11 +104,8 @@ function Order({ params }) {
         const fetchOrder = async () => {
             try {
                 dispatch({ type: 'FETCH_REQUEST' });
-                const { data } = await client.query({
-                    query: getOneOrder,
-                    variables: {
-                        getOneOrderId: orderId,
-                    }
+                const data = await query(getOneOrder, {
+                    getOneOrderId: orderId,
                 });
 
                 dispatch({ type: 'FETCH_SUCCESS', payload: data.getOneOrder });
@@ -128,9 +128,7 @@ function Order({ params }) {
             }
         } else {
             const loadPaypalScript = async () => {
-                const { data } = await client.query({
-                    query: getClientId,
-                });
+                const data = await query(getClientId, {});
                 paypalDispatch({
                     type: 'resetOptions',
                     value: {
@@ -164,14 +162,11 @@ function Order({ params }) {
             try {
                 dispatch({ type: 'PAY_REQUEST' });
                 console.log(details)
-                const { data } = await client.query({
-                    query: payOrder,
-                    variables: {
-                        orderId: order._id,
-                        status: details.status,
-                        emailAddress: details.payer.email_address,
-                        payOrderId: details.id
-                    }
+                const data = await query(payOrder, {
+                    orderId: order._id,
+                    status: details.status,
+                    emailAddress: details.payer.email_address,
+                    payOrderId: details.id
                 });
                 // details
                 dispatch({ type: 'PAY_SUCCESS', payload: data.payOrder });
@@ -190,11 +185,8 @@ function Order({ params }) {
         try {
             dispatch({ type: 'DELIVER_REQUEST' });
 
-            const { data } = await client.query({
-                query: updateOrderDeliver,
-                variables: {
-                    updateOrderDeliverId: order._id,
-                }
+            const data = await query(updateOrderDeliver, {
+                updateOrderDeliverId: order._id,
             });
             dispatch({ type: 'DELIVER_SUCCESS', payload: data.updateOrderDeliver });
             enqueueSnackbar('Order is delivered', { variant: 'success' });

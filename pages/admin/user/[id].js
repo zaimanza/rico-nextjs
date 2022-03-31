@@ -21,9 +21,9 @@ import Layout from '../../../components/Layout';
 import useStyles from '../../../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
-import client from '../../../graphql/apollo-client-old';
 import { getAdminUserById } from '../../../graphql/schema/admin/admin-user/get-admin-user-by-id';
 import { updateAdminUserById } from '../../../graphql/schema/admin/admin-user/update-admin-user-by-id';
+import useGraphql from '../../../graphql/useGraphql';
 
 function reducer(state, action) {
     switch (action.type) {
@@ -73,6 +73,7 @@ function UserEdit({ params }) {
     const router = useRouter();
     const classes = useStyles();
     const { userInfo } = state;
+    const [query] = useGraphql()
 
     useEffect(() => {
         if (!userInfo) {
@@ -81,11 +82,8 @@ function UserEdit({ params }) {
             const fetchData = async () => {
                 try {
                     dispatch({ type: 'FETCH_REQUEST' });
-                    const { data } = await client.query({
-                        query: getAdminUserById,
-                        variables: {
-                            getAdminUserByIdId: userId,
-                        }
+                    const data = await query(getAdminUserById, {
+                        getAdminUserByIdId: userId,
                     });
                     setIsAdmin(data.getAdminUserById.isAdmin);
                     dispatch({ type: 'FETCH_SUCCESS' });
@@ -103,13 +101,10 @@ function UserEdit({ params }) {
         try {
             dispatch({ type: 'UPDATE_REQUEST' });
 
-            await client.query({
-                query: updateAdminUserById,
-                variables: {
-                    updateAdminUserByIdId: userId,
-                    name: name,
-                    isAdmin: isAdmin,
-                }
+            await query(updateAdminUserById, {
+                updateAdminUserByIdId: userId,
+                name: name,
+                isAdmin: isAdmin,
             });
             dispatch({ type: 'UPDATE_SUCCESS' });
             enqueueSnackbar('User updated successfully', { variant: 'success' });

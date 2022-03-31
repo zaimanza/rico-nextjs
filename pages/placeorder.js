@@ -25,7 +25,8 @@ import useStyles from '../utils/styles';
 import CheckoutWizard from '../components/checkoutWizard';
 import { useSnackbar } from 'notistack';
 import { addOrder } from '../graphql/schema/order/add-order';
-import client from '../graphql/apollo-client-old';
+import useGraphql from '../graphql/useGraphql';
+
 
 function PlaceOrder() {
     const classes = useStyles();
@@ -54,6 +55,7 @@ function PlaceOrder() {
 
     const { closeSnackbar, enqueueSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
+    const [mutate] = useGraphql()
     const placeOrderHandler = async () => {
         closeSnackbar();
         try {
@@ -71,17 +73,14 @@ function PlaceOrder() {
                 delete orderItem['numReviews'];
                 delete orderItem['description'];
             });
-            const { data } = await client.mutate({
-                mutation: addOrder,
-                variables: {
-                    orderItems: orderItems,
-                    shippingAddress,
-                    paymentMethod,
-                    itemsPrice,
-                    shippingPrice,
-                    taxPrice,
-                    totalPrice,
-                }
+            const data = await mutate(addOrder, {
+                orderItems: orderItems,
+                shippingAddress,
+                paymentMethod,
+                itemsPrice,
+                shippingPrice,
+                taxPrice,
+                totalPrice,
             });
             dispatch({ type: 'CART_CLEAR' });
             localStorage.removeItem('cartItems');

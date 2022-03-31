@@ -15,7 +15,8 @@ import useStyles from '../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { userRegister } from '../graphql/schema/user/user-register';
-import client from '../graphql/apollo-client-old';
+import useGraphql from '../graphql/useGraphql';
+
 
 export default function Register() {
     const {
@@ -28,6 +29,7 @@ export default function Register() {
     const { redirect } = router.query;
     const { state, dispatch } = useContext(Store);
     const { userInfo } = state;
+    const [mutate] = useGraphql()
     useEffect(() => {
         if (userInfo) {
             router.push('/');
@@ -42,13 +44,10 @@ export default function Register() {
             return;
         }
         try {
-            const { data } = await client.mutate({
-                mutation: userRegister,
-                variables: {
-                    name: name,
-                    email: email,
-                    password: password,
-                }
+            const data = await mutate(userRegister, {
+                name: name,
+                email: email,
+                password: password,
             });
             dispatch({ type: 'USER_LOGIN', payload: data.userRegister });
             localStorage.setItem('userInfo', JSON.stringify(data.userRegister));

@@ -22,9 +22,10 @@ import { useSnackbar } from 'notistack';
 import { getProductById } from '../../../graphql/schema/admin/admin-product/get-product-by-id';
 import { updateProductById } from '../../../graphql/schema/admin/admin-product/update-product-by-id';
 import { s3ProductUploadUrl } from '../../../graphql/schema/product/s3-product-upload-url';
-import client from '../../../graphql/apollo-client-old';
+
 import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
+import useGraphql from '../../../graphql/useGraphql';
 
 function reducer(state, action) {
     switch (action.type) {
@@ -57,6 +58,7 @@ function reducer(state, action) {
 }
 
 function ProductEdit({ params }) {
+    const [query] = useGraphql()
     const productId = params.id;
     const [getToUploadToS3Obj, setToUploadToS3Obj] = useState({});
     const [getImageViewData, setImageViewData] = useState("");
@@ -83,11 +85,8 @@ function ProductEdit({ params }) {
             const fetchData = async () => {
                 try {
                     dispatch({ type: 'FETCH_REQUEST' });
-                    const { data } = await client.query({
-                        query: getProductById,
-                        variables: {
-                            getProductByIdId: productId,
-                        }
+                    const data = await query(getProductById, {
+                        getProductByIdId: productId,
                     });
                     dispatch({ type: 'FETCH_SUCCESS' });
                     setValue('name', data.getProductById.name);
@@ -166,9 +165,7 @@ function ProductEdit({ params }) {
                 }
                 const compressedFile = await imageCompression(file, options);
                 //get upload url
-                const { data } = await client.query({
-                    query: s3ProductUploadUrl,
-                });
+                const data = await query(s3ProductUploadUrl, {});
                 //put to aws
                 await fetch(data.s3ProductUploadUrl, {
                     method: "PUT",
@@ -186,12 +183,9 @@ function ProductEdit({ params }) {
                 updateData.image = awsImageUrl
 
             }
-            await client.query({
-                query: updateProductById,
-                variables: {
-                    updateProductByIdId: productId,
-                    updateData: updateData,
-                }
+            await query(updateProductById, {
+                updateProductByIdId: productId,
+                updateData: updateData,
             });
             dispatch({ type: 'UPDATE_SUCCESS' });
             enqueueSnackbar('Product updated successfully', { variant: 'success' });

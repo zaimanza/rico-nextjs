@@ -35,7 +35,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
-import client from '../graphql/apollo-client-old';
 import useGraphql from '../graphql/useGraphql';
 
 export default function Layout({ title, description, children }) {
@@ -74,7 +73,7 @@ export default function Layout({ title, description, children }) {
     const sidebarCloseHandler = () => {
         setSidebarVisible(false);
     };
-    const [query, mutate] = useGraphql()
+    const [query] = useGraphql()
 
     const [categories, setCategories] = useState([]);
     const { enqueueSnackbar } = useSnackbar();

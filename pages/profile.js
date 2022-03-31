@@ -18,7 +18,8 @@ import useStyles from '../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { userUpdate } from '../graphql/schema/user/user-update';
-import client from '../graphql/apollo-client-old';
+import useGraphql from '../graphql/useGraphql';
+
 
 function Profile() {
     const { state, dispatch } = useContext(Store);
@@ -32,6 +33,7 @@ function Profile() {
     const router = useRouter();
     const classes = useStyles();
     const { userInfo } = state;
+    const [mutate] = useGraphql()
 
     useEffect(() => {
         if (!userInfo) {
@@ -47,13 +49,10 @@ function Profile() {
             return;
         }
         try {
-            const { data } = await client.mutate({
-                mutation: userUpdate,
-                variables: {
-                    name: name,
-                    email: email,
-                    password: password,
-                }
+            const data = await mutate(userUpdate, {
+                name: name,
+                email: email,
+                password: password,
             });
             dispatch({ type: 'USER_LOGIN', payload: data.userUpdate });
             localStorage.setItem('userInfo', JSON.stringify(data.userUpdate));

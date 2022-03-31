@@ -24,8 +24,9 @@ import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
 import { useSnackbar } from 'notistack';
 import { getAdminAllUser } from '../../graphql/schema/admin/admin-user/get-admin-all-user';
-import client from '../../graphql/apollo-client-old';
+
 import { deleteAdminUserById } from '../../graphql/schema/admin/admin-user/delete-admin-user-by-id';
+import useGraphql from '../../graphql/useGraphql';
 
 function reducer(state, action) {
     switch (action.type) {
@@ -62,6 +63,8 @@ function AdminUsers() {
             error: '',
         });
 
+    const [query] = useGraphql()
+
     useEffect(() => {
         if (!userInfo) {
             router.push('/login');
@@ -69,9 +72,7 @@ function AdminUsers() {
         const fetchData = async () => {
             try {
                 dispatch({ type: 'FETCH_REQUEST' });
-                const { data } = await client.query({
-                    query: getAdminAllUser,
-                });
+                const data = await query(getAdminAllUser, {});
                 dispatch({ type: 'FETCH_SUCCESS', payload: data.getAdminAllUser });
             } catch (err) {
                 dispatch({ type: 'FETCH_FAIL', payload: "There's an error" });
@@ -92,11 +93,8 @@ function AdminUsers() {
         }
         try {
             dispatch({ type: 'DELETE_REQUEST' });
-            await client.query({
-                query: deleteAdminUserById,
-                variables: {
-                    deleteAdminUserByIdId: userId,
-                }
+            await query(deleteAdminUserById, {
+                deleteAdminUserByIdId: userId,
             });
             dispatch({ type: 'DELETE_SUCCESS' });
             enqueueSnackbar('User deleted successfully', { variant: 'success' });

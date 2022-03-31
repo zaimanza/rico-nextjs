@@ -1,37 +1,31 @@
 import {
   Grid,
 } from '@material-ui/core';
-import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import ProductItem from '../components/ProductItem';
-import client from '../graphql/apollo-client-old';
-import { checkStockOneProduct } from '../graphql/schema/product/check-stock-one-product';
 import { getManyProduct } from '../graphql/schema/product/get-many-product';
+import useGraphql from '../graphql/useGraphql';
 import { Store } from '../utils/Store';
 
 
-export default function Home(props) {
-  const [result, setResult] = useState([]);
-  const router = useRouter();
-  const { state, dispatch } = useContext(Store);
-  const { products } = props;
+export default function Home() {
+  const [products, setResult] = useState([]);
+  const { dispatch } = useContext(Store);
+  const [query] = useGraphql()
   useEffect(() => {
 
     const initialRun = async () => {
-      const { data } = await client.query({
-        query: getManyProduct,
-      });
+      const data = await query(getManyProduct, {});
       console.log('hello')
       console.log(data.getManyProduct)
       await dispatch({ type: 'ADD_PRODUCTS', payload: data.getManyProduct });
       setResult(data.getManyProduct)
-      console.log(result)
     }
     initialRun()
   }, []);
   const addToCartHandler = async (product) => {
-    console.log(state.products)
+    console.log(product)
     // const existItem = state.cart.cartItems.find((x) => x._id === product._id);
     // const quantity = existItem ? existItem.quantity + 1 : 1;
     // const { data } = await client.query({
@@ -65,17 +59,4 @@ export default function Home(props) {
       </div>
     </Layout>
   );
-}
-
-export async function getServerSideProps() {
-
-  const { data } = await client.query({
-    query: getManyProduct,
-  });
-
-  return {
-    props: {
-      products: data.getManyProduct,
-    },
-  };
 }

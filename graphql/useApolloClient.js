@@ -1,7 +1,6 @@
 import { ApolloClient, createHttpLink, InMemoryCache, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from "@apollo/client/link/error";
-import { useSnackbar } from 'notistack';
 import { useRouter } from 'next/router';
 
 function useApolloClient() {
