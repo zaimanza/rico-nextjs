@@ -1,12 +1,13 @@
 import { ApolloProvider } from '@apollo/client';
 import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
-import client from '../graphql/apollo-client-old';
 import '../styles/globals.css';
 import { StoreProvider } from '../utils/Store';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import useApolloClient from '../graphql/useApolloClient';
 
 function MyApp({ Component, pageProps }) {
+  const [client] = useApolloClient()
   useEffect(() => {
     const jssStyles = document.querySelector('#jss-server-side');
     if (jssStyles) {
@@ -14,15 +15,15 @@ function MyApp({ Component, pageProps }) {
     }
   }, []);
   return (
-    <ApolloProvider client={client}>
-      <SnackbarProvider anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+    <SnackbarProvider anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+      <ApolloProvider client={client}>
         <StoreProvider>
           <PayPalScriptProvider deferLoading={true}>
             <Component {...pageProps} />
           </PayPalScriptProvider>
         </StoreProvider>
-      </SnackbarProvider>
-    </ApolloProvider>
+      </ApolloProvider>
+    </SnackbarProvider>
   );
 }
 

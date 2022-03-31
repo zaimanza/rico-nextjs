@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 import { useRouter } from 'next/router';
 
 function useApolloClient() {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    // const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const router = useRouter();
 
     const httpLink = createHttpLink({ uri: "http://localhost:4001/graphql", });
@@ -36,31 +36,32 @@ function useApolloClient() {
     }
 
     const errorLink = onError(({ graphQLErrors, networkError }) => {
-        closeSnackbar();
+        // closeSnackbar();
         if (graphQLErrors)
-            graphQLErrors.forEach(
-                ({ message, locations, path }) => {
-                    console.log(
-                        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
-                    )
-                    console.log(message)
-                    enqueueSnackbar(
-                        message,
-                        {
-                            // variant: 'error',
-                            // variant: 'default',
-                            // variant: 'success',
-                            variant: 'warning',
-                            // variant: 'info',
-                            anchorOrigin: {
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            },
-                            preventDuplicate: true,
-                        }
-                    )
-                }
-            )
+            console.log('Theres an error')
+        // graphQLErrors.forEach(
+        //     ({ message, locations, path }) => {
+        //         console.log(
+        //             `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+        //         )
+        //         console.log(message)
+        //         enqueueSnackbar(
+        //             message,
+        //             {
+        //                 // variant: 'error',
+        //                 // variant: 'default',
+        //                 // variant: 'success',
+        //                 variant: 'warning',
+        //                 // variant: 'info',
+        //                 anchorOrigin: {
+        //                     vertical: 'bottom',
+        //                     horizontal: 'left',
+        //                 },
+        //                 preventDuplicate: true,
+        //             }
+        //         )
+        //     }
+        // )
 
         if (networkError) router.push('/500')
     });

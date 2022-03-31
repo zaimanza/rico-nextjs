@@ -36,6 +36,7 @@ import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
 import client from '../graphql/apollo-client-old';
+import useGraphql from '../graphql/useGraphql';
 
 export default function Layout({ title, description, children }) {
     const router = useRouter();
@@ -73,6 +74,7 @@ export default function Layout({ title, description, children }) {
     const sidebarCloseHandler = () => {
         setSidebarVisible(false);
     };
+    const [query, mutate] = useGraphql()
 
     const [categories, setCategories] = useState([]);
     const { enqueueSnackbar } = useSnackbar();
@@ -80,22 +82,23 @@ export default function Layout({ title, description, children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const fetchCategories = async () => {
         try {
-            const { data } = await client.query({
-                query: getManyProductCategory,
-            });
+
+            const data = await query(getManyProductCategory, {})
+            console.log("RECEIVE DATA")
+            console.log(data)
             setCategories(data.getManyProductCategory);
         } catch (err) {
             enqueueSnackbar("There's an error", { variant: 'error' });
         }
     };
 
-    const [query, setQuery] = useState('');
+    const [queryData, setQuery] = useState('');
     const queryChangeHandler = (e) => {
         setQuery(e.target.value);
     };
     const submitHandler = (e) => {
         e.preventDefault();
-        router.push(`/search?query=${query}`);
+        router.push(`/search?query=${queryData}`);
     };
 
     useEffect(() => {
