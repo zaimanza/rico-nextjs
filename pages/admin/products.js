@@ -97,9 +97,6 @@ function AdminProdcuts() {
 
     const { enqueueSnackbar } = useSnackbar();
     const createHandler = async () => {
-        if (!window.confirm('Are you sure?')) {
-            return;
-        }
         try {
             dispatch({ type: 'CREATE_REQUEST' });
             console.log("HI")
