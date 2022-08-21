@@ -22,7 +22,7 @@ import {
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import useStyles from '../utils/styles';
-import CheckoutWizard from '../components/checkoutWizard';
+import CheckoutWizard from '../components/CheckoutWizard';
 import { useSnackbar } from 'notistack';
 import { addOrder } from '../graphql/schema/order/add-order';
 import useGraphql from '../graphql/useGraphql';
