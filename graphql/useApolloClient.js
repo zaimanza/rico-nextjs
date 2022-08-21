@@ -7,7 +7,7 @@ function useApolloClient() {
     // const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const router = useRouter();
 
-    const httpLink = createHttpLink({ uri: "http://localhost:4001/graphql", });
+    const httpLink = createHttpLink({ uri: "https://hirodeli.herokuapp.com/graphql", });
 
     const authLink = setContext((_, { headers }) => {
         let token
